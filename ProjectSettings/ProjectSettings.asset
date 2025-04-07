@@ -562,7 +562,7 @@ PlayerSettings:
   locationUsageDescription: Required for Geo Anchors
   microphoneUsageDescription: Mic required
   bluetoothUsageDescription: 
-  macOSTargetOSVersion: 11.0
+  macOSTargetOSVersion: 14.0
   switchNMETAOverride: 
   switchNetLibKey: 
   switchSocketMemoryPoolSize: 6144

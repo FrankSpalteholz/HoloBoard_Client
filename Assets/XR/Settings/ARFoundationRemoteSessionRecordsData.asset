@@ -9,7 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7fd9488000d3734a9e00ee676215985, type: 3}
-  m_Name: DefaultVolumeProfile
+  m_Script: {fileID: 11500000, guid: da3d573f1b7044a0a8504883bb5b15cf, type: 3}
+  m_Name: ARFoundationRemoteSessionRecordsData
   m_EditorClassIdentifier: 
-  components: []

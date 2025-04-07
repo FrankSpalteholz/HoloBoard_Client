@@ -1,33 +1,32 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Diese Klasse als separates Skript anlegen
 public class SimpleDataSmoother
 {
-    // Einfache gleitende Mittelwert-Implementierung für Positionen
+    // Simple moving average implementation for positions
     private Queue<Vector2> gazePositionQueue = new Queue<Vector2>();
     private Queue<Vector3> headPositionQueue = new Queue<Vector3>();
     private Queue<Quaternion> headRotationQueue = new Queue<Quaternion>();
     
-    private int maxSamples = 3; // Kleinere Anzahl für schnellere Reaktion auf dem iPhone
+    private int maxSamples = 3; // Smaller count for faster response on iPhone
     
-    // Konstruktor mit optionaler Sample-Anzahl
+    // Constructor with optional sample count
     public SimpleDataSmoother(int sampleCount = 3)
     {
-        maxSamples = Mathf.Clamp(sampleCount, 1, 10); // Begrenze die Sample-Größe
+        maxSamples = Mathf.Clamp(sampleCount, 1, 10); // Limit sample size
     }
     
-    // Fügt neue Gaze-Position hinzu und gibt geglätteten Wert zurück
+    // Add new gaze position and return smoothed value
     public Vector2 SmoothGazePosition(Vector2 newPosition)
     {
-        // Füge neue Position hinzu
+        // Add new position
         gazePositionQueue.Enqueue(newPosition);
         
-        // Entferne älteste Position, wenn die Queue voll ist
+        // Remove oldest position if queue is full
         if (gazePositionQueue.Count > maxSamples)
             gazePositionQueue.Dequeue();
             
-        // Berechne Durchschnitt
+        // Calculate average
         Vector2 smoothedPosition = Vector2.zero;
         foreach (Vector2 pos in gazePositionQueue)
         {
@@ -37,17 +36,17 @@ public class SimpleDataSmoother
         return smoothedPosition / gazePositionQueue.Count;
     }
     
-    // Fügt neue Kopfposition hinzu und gibt geglätteten Wert zurück
+    // Add new head position and return smoothed value
     public Vector3 SmoothHeadPosition(Vector3 newPosition)
     {
-        // Füge neue Position hinzu
+        // Add new position
         headPositionQueue.Enqueue(newPosition);
         
-        // Entferne älteste Position, wenn die Queue voll ist
+        // Remove oldest position if queue is full
         if (headPositionQueue.Count > maxSamples)
             headPositionQueue.Dequeue();
             
-        // Berechne Durchschnitt
+        // Calculate average
         Vector3 smoothedPosition = Vector3.zero;
         foreach (Vector3 pos in headPositionQueue)
         {
@@ -57,26 +56,26 @@ public class SimpleDataSmoother
         return smoothedPosition / headPositionQueue.Count;
     }
     
-    // Fügt neue Rotation hinzu und gibt geglätteten Wert zurück
+    // Add new rotation and return smoothed value
     public Quaternion SmoothHeadRotation(Quaternion newRotation)
     {
-        // Füge neue Rotation hinzu
+        // Add new rotation
         headRotationQueue.Enqueue(newRotation);
         
-        // Entferne älteste Rotation, wenn die Queue voll ist
+        // Remove oldest rotation if queue is full
         if (headRotationQueue.Count > maxSamples)
             headRotationQueue.Dequeue();
             
-        // Berechne durchschnittliche Rotation (Slerp)
+        // Calculate average rotation (Slerp)
         if (headRotationQueue.Count == 1)
             return newRotation;
             
-        // Wir verwenden Quaternion.Slerp für korrekte Quaternion-Interpolation
-        Quaternion result = headRotationQueue.Peek(); // Beginne mit der ersten Rotation
+        // Use Quaternion.Slerp for proper quaternion interpolation
+        Quaternion result = headRotationQueue.Peek(); // Start with first rotation
         float weight = 1.0f / headRotationQueue.Count;
         float accumWeight = weight;
         
-        // Überspringe erstes Element (wurde schon geholt)
+        // Skip first element (already fetched)
         bool isFirst = true;
         foreach (Quaternion rot in headRotationQueue)
         {
@@ -85,7 +84,7 @@ public class SimpleDataSmoother
                 continue;
             }
             
-            // Slerp zwischen aktuellem Ergebnis und nächster Rotation
+            // Slerp between current result and next rotation
             result = Quaternion.Slerp(result, rot, accumWeight / (accumWeight + weight));
             accumWeight += weight;
         }
@@ -93,7 +92,7 @@ public class SimpleDataSmoother
         return result;
     }
     
-    // Methode zum Zurücksetzen der Smoother (z.B. bei Tracking-Verlusten)
+    // Method to reset smoother (e.g., on tracking loss)
     public void Reset()
     {
         gazePositionQueue.Clear();
@@ -101,20 +100,3 @@ public class SimpleDataSmoother
         headRotationQueue.Clear();
     }
 }
-
-// ÄNDERUNGEN AM TrackingDataSender.cs:
-
-/*
-// Am Anfang der TrackingDataSender-Klasse folgende Variable hinzufügen:
-private SimpleDataSmoother dataSmoother;
-
-// In der Start-Methode nach der Überprüfung der Komponenten:
-dataSmoother = new SimpleDataSmoother(3); // 3 Samples für das iPhone
-
-// In der SendTrackingData-Methode ändern:
-// Vor dem Senden die Werte glätten:
-lastGazePosition = dataSmoother.SmoothGazePosition(gazeTracker.GetHeadPositionProjection());
-lastZDistance = gazeTracker.GetZDistance(); // Z-Distanz muss nicht unbedingt geglättet werden
-lastHeadPosition = dataSmoother.SmoothHeadPosition(headTrackingTransform.transform.position * 100);
-lastHeadRotation = dataSmoother.SmoothHeadRotation(headTrackingTransform.transform.rotation);
-*/

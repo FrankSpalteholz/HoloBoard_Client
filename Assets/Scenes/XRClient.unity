@@ -159,7 +159,7 @@ MonoBehaviour:
   gazeMarker: {fileID: 115085239}
   contentPanel: {fileID: 1909757883}
   debugInfoText: {fileID: 1014661334}
-  faceCamOffset: {x: 0, y: 0, z: 0}
+  faceCamOffset: {x: 0, y: 0.01, z: 0}
   movementScaleFactor: 25
   invertXAxis: 1
   restrictToPanel: 1
@@ -265,7 +265,7 @@ PrefabInstance:
     - target: {fileID: 152495550747070176, guid: 381cad84d578d4bc481dc552d984a3cd,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1956726250845337899, guid: 381cad84d578d4bc481dc552d984a3cd,
         type: 3}
@@ -510,7 +510,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: SendData
+  m_text: New Text
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -596,17 +596,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 200394132}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 681405702}
+  m_Father: {fileID: 1240932079}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 217, y: 981}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!4 &231737526 stripped
 Transform:
@@ -1112,7 +1112,7 @@ PrefabInstance:
     - target: {fileID: 6975486038996686889, guid: 8f2c1ffdafd49a943ac79dc0ff480220,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6975486038996686889, guid: 8f2c1ffdafd49a943ac79dc0ff480220,
         type: 3}
@@ -1152,7 +1152,7 @@ PrefabInstance:
     - target: {fileID: 8766024634595469697, guid: 8f2c1ffdafd49a943ac79dc0ff480220,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8766024634595469697, guid: 8f2c1ffdafd49a943ac79dc0ff480220,
         type: 3}
@@ -2800,7 +2800,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 200394135}
   - {fileID: 1225561638}
   - {fileID: 830816276}
   m_Father: {fileID: 824165827}
@@ -3433,7 +3432,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &834652109
 Transform:
   m_ObjectHideFlags: 0
@@ -4492,6 +4491,7 @@ RectTransform:
   - {fileID: 115085239}
   - {fileID: 1014661336}
   - {fileID: 1539162966}
+  - {fileID: 200394135}
   m_Father: {fileID: 834652109}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -5995,7 +5995,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!20 &1679514750
 Camera:
   m_ObjectHideFlags: 0
@@ -6439,7 +6439,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1778326925}
-  - component: {fileID: 1778326924}
+  - component: {fileID: 1778326926}
   m_Layer: 0
   m_Name: TrackingDataSender
   m_TagString: Untagged
@@ -6447,30 +6447,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1778326924
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1778326923}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee0a39c1fd9264c73aa897610089175f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gazeTracker: {fileID: 13218122}
-  audioDetector: {fileID: 250630531}
-  udpClientComponent: {fileID: 731987694}
-  outputDebugText: {fileID: 200394133}
-  showDebugInfo: 1
-  sendRate: 0.05
-  autoStartSending: 1
-  enableSmoothing: 0
-  sampleCount: 3
-  headTrackingTransform: {fileID: 684222488}
-  phoneScreenTransform: {fileID: 1612371310}
-  faceCamOffset: {x: 0, y: 0, z: 0}
 --- !u!4 &1778326925
 Transform:
   m_ObjectHideFlags: 0
@@ -6486,6 +6462,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1778326926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1778326923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0eac2e8af0a6b49cabe281b0c052392c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gazeTracker: {fileID: 13218122}
+  audioDetector: {fileID: 250630531}
+  udpClientComponent: {fileID: 731987694}
+  outputDebugText: {fileID: 1225561639}
+  showDebugInfo: 1
+  sendRate: 0.05
+  autoStartSending: 0
+  headTrackingTransform: {fileID: 684222488}
+  phoneScreenTransform: {fileID: 1612371310}
+  faceCamOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &1810062558
 GameObject:
   m_ObjectHideFlags: 0
