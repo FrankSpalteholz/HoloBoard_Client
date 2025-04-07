@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System;
+using System.Collections;
 
 namespace NetworkFramework
 {
@@ -19,9 +20,16 @@ namespace NetworkFramework
         [SerializeField] public string predefinedIP = ""; // Predefined IP address (manually set)
         [SerializeField] private float autoConnectDelay = 1f; // Short delay for auto-connection
         
+        [Header("Connection Retry Settings")]
+        [SerializeField] private bool enableReconnectAttempts = true;
+        [SerializeField] private float reconnectInterval = 5f; // Sekunden zwischen Verbindungsversuchen
+        [SerializeField] private bool logConnectionErrors = false; // Nur für Debug-Zwecke
+        
         private IPEndPoint serverEndPoint;
         private float startTime;
         private bool autoConnectTriggered = false;
+        private float lastReconnectTime = 0f;
+        private bool isAttemptingConnection = false;
         
         protected override void Start()
         {
@@ -45,13 +53,74 @@ namespace NetworkFramework
         
         private void Update()
         {
-            // Auto-connect after short delay
+            // Auto-connect nach kurzer Verzögerung
             if (autoConnectOnStart && !isRunning && !autoConnectTriggered && Time.time > startTime + autoConnectDelay)
             {
                 autoConnectTriggered = true;
                 ConnectToServer();
-                Debug.Log("Auto-connecting to: " + serverIP);
             }
+            
+            // Verbindungswiederherstellung
+            if (enableReconnectAttempts && !isRunning && !isAttemptingConnection && Time.time > lastReconnectTime + reconnectInterval)
+            {
+                if (!string.IsNullOrEmpty(serverIP))
+                {
+                    lastReconnectTime = Time.time;
+                    isAttemptingConnection = true;
+                    
+                    // Im Hintergrund verbinden, um UI-Blockierung zu vermeiden
+                    StartCoroutine(TryReconnect());
+                }
+            }
+        }
+        
+        private IEnumerator TryReconnect()
+        {
+            if (logConnectionErrors)
+            {
+                Debug.Log("Versuche, Verbindung zum Server herzustellen: " + serverIP);
+            }
+            
+            try
+            {
+                // Starten UDP-Client
+                udpClient = new UdpClient(localPort);
+                serverEndPoint = new IPEndPoint(IPAddress.Parse(serverIP), serverPort);
+                
+                isRunning = true;
+                
+                // Starte Thread für Datenempfang
+                receiveThread = new Thread(new ThreadStart(ReceiveData));
+                receiveThread.IsBackground = true;
+                receiveThread.Start();
+                
+                // Sende Ping (optional)
+                byte[] data = Encoding.UTF8.GetBytes("ping");
+                udpClient.Send(data, data.Length, serverEndPoint);
+                
+                // Status aktualisieren
+                MainThreadDispatcher.RunOnMainThread(() => {
+                    UpdateStatus("Verbindung zum Server wird hergestellt...");
+                });
+            }
+            catch (Exception e)
+            {
+                // Fehlerbehandlung ohne Debug.LogError
+                isRunning = false;
+                StopConnectionWithLogging(false); // false bedeutet: keine Fehlermeldungen ausgeben
+                
+                MainThreadDispatcher.RunOnMainThread(() => {
+                    UpdateStatus("Warte auf Server...");
+                });
+                
+                if (logConnectionErrors)
+                {
+                    Debug.LogWarning("Server nicht erreichbar: " + e.Message);
+                }
+            }
+            
+            isAttemptingConnection = false;
+            yield return null;
         }
         
         public void ConnectToServer()
@@ -82,7 +151,10 @@ namespace NetworkFramework
             catch (Exception e)
             {
                 UpdateStatus("Client error: " + e.ToString());
-                Debug.LogError("Client error: " + e.ToString());
+                if (logConnectionErrors)
+                {
+                    Debug.LogError("Client error: " + e.ToString());
+                }
             }
         }
         
@@ -112,10 +184,20 @@ namespace NetworkFramework
                 {
                     if (isRunning) // Only report errors if not intentionally stopped
                     {
+                        // Fehler im Hauptthread behandeln, ohne Flut von Meldungen
                         MainThreadDispatcher.RunOnMainThread(() => {
-                            Debug.LogError("Error receiving data: " + e.ToString());
-                            UpdateStatus("Receive error");
+                            // Status aktualisieren ohne Fehlerausgabe
+                            UpdateStatus("Verbindung unterbrochen");
+                            
+                            if (logConnectionErrors)
+                            {
+                                Debug.LogWarning("Fehler beim Empfang: " + e.Message);
+                            }
                         });
+                        
+                        // Verbindung stoppen, aber nicht ständig neu starten
+                        isRunning = false;
+                        break;
                     }
                 }
             }
@@ -138,7 +220,10 @@ namespace NetworkFramework
             }
             catch (Exception e)
             {
-                Debug.LogError("Error sending message: " + e.ToString());
+                if (logConnectionErrors)
+                {
+                    Debug.LogError("Error sending message: " + e.ToString());
+                }
                 UpdateStatus("Send error");
             }
         }
@@ -176,7 +261,15 @@ namespace NetworkFramework
             return autoConnectOnStart;
         }
         
+        // Behalte die ursprüngliche Signatur für die Override-Methode bei
         public override void StopConnection()
+        {
+            // Rufe einfach deine neue Methode mit dem Standardwert auf
+            StopConnectionWithLogging(true);
+        }
+
+        // Erstelle eine neue Methode für die erweiterte Funktionalität
+        public void StopConnectionWithLogging(bool logErrors = true)
         {
             try
             {
@@ -185,15 +278,56 @@ namespace NetworkFramework
                 {
                     byte[] data = Encoding.UTF8.GetBytes("__DISCONNECT__");
                     udpClient.Send(data, data.Length, serverEndPoint);
-                    Debug.Log("Disconnect message sent");
+                    
+                    if (logErrors)
+                    {
+                        Debug.Log("Disconnect message sent");
+                    }
                 }
             }
             catch (Exception e)
             {
-                Debug.LogError("Error sending disconnect message: " + e.ToString());
+                if (logErrors)
+                {
+                    Debug.LogError("Error sending disconnect message: " + e.ToString());
+                }
             }
             
-            base.StopConnection();
+            isRunning = false;
+            
+            if (receiveThread != null && receiveThread.IsAlive)
+            {
+                try
+                {
+                    receiveThread.Abort();
+                }
+                catch (Exception e)
+                {
+                    if (logErrors)
+                    {
+                        Debug.LogError("Fehler beim Beenden des Threads: " + e.ToString());
+                    }
+                }
+                receiveThread = null;
+            }
+            
+            if (udpClient != null)
+            {
+                try
+                {
+                    udpClient.Close();
+                }
+                catch (Exception e)
+                {
+                    if (logErrors)
+                    {
+                        Debug.LogError("Fehler beim Schließen des UdpClient: " + e.ToString());
+                    }
+                }
+                udpClient = null;
+            }
+            
+            UpdateStatus("Verbindung getrennt");
         }
     }
 }

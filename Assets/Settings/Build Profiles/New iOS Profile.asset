@@ -32,9 +32,12 @@ MonoBehaviour:
     m_path: Assets/Scenes/ARFoundation/FaceTracking/FixationPoint/FixationPoint.unity
   - m_enabled: 0
     m_path: Assets/Scenes/FaceMeshCustom.unity
-  - m_enabled: 1
+  - m_enabled: 0
     m_path: Assets/Scenes/XRClient.unity
-  m_ScriptingDefines: []
+  - m_enabled: 1
+    m_path: Assets/Scenes/XRClient_MediaPipe.unity
+  m_ScriptingDefines:
+  - 
   m_PlayerSettingsYaml:
     m_Settings:
     - line: '| PlayerSettings:'
