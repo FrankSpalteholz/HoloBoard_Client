@@ -160,7 +160,7 @@ MonoBehaviour:
   contentPanel: {fileID: 1909757883}
   debugInfoText: {fileID: 1014661334}
   faceCamOffset: {x: 0, y: 0.01, z: 0}
-  movementScaleFactor: 25
+  movementScaleFactor: 10
   invertXAxis: 1
   restrictToPanel: 1
   showDebugInfo: 0
@@ -1112,7 +1112,7 @@ PrefabInstance:
     - target: {fileID: 6975486038996686889, guid: 8f2c1ffdafd49a943ac79dc0ff480220,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6975486038996686889, guid: 8f2c1ffdafd49a943ac79dc0ff480220,
         type: 3}

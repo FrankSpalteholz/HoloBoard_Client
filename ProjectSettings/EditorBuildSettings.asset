@@ -176,9 +176,12 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/ARFoundation/BoundingBoxDetection/BoundingBoxes.unity
     guid: e5d8c18ab0c954fd4a7aee48dffe9836
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/XRClient.unity
     guid: e6763202381e74f80b609ab9c17d1e6d
+  - enabled: 1
+    path: Assets/MediaPipeUnity/Samples/Scenes/Hand Landmark Detection/HandLandmarkDetectionCustom.unity
+    guid: 9cb7f8a0e54474861801b10f1e7cb0e1
   m_configObjects:
     AR Foundation RemoteARFoundationRemoteLoaderSettings: {fileID: 11400000, guid: 35413ee59644c438a938a1aee7685ccc,
       type: 2}
