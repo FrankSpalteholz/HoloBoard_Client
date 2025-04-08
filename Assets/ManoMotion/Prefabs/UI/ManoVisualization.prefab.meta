@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: f5ada212b3b98412ea46723d2f7d7fac
+timeCreated: 1525849625
+licenseType: Store
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/Prefabs/UI/ManoVisualization.prefab
+  uploadId: 727894

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: bdf3913abc2512a41813f2e492770e56
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/Scripts/Instructions/New Style/Animations/DragGrabbable.anim
+  uploadId: 727894

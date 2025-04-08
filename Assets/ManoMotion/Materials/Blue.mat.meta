@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a9a3de3b6b256d14594c85a963bc9416
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/Materials/Blue.mat
+  uploadId: 727894

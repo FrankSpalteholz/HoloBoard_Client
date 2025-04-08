@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: b6585e4c74898114c976a6c860f5ef53
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/Scripts/Core/Util Tools/RotationUtility.cs
+  uploadId: 727894

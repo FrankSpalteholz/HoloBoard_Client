@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 7e4438113a974404fab51ab6426822fe
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  preprocessorOverride: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/Materials/Shaders/FingerShader.shader
+  uploadId: 727894

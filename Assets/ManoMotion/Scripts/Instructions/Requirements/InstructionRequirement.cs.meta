@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 00f3ca58a414ddc4a89208dc90814ff3
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/Scripts/Instructions/Requirements/InstructionRequirement.cs
+  uploadId: 727894

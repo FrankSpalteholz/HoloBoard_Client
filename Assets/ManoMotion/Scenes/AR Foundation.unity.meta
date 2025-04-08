@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 0f28c04c65ed3fa4c928fc39f44cf198
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/Scenes/AR Foundation.unity
+  uploadId: 727894

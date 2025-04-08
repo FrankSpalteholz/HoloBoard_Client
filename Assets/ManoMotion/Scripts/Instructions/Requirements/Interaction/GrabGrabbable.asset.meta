@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a4ebda10f3957d84890c679af009aecd
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/Scripts/Instructions/Requirements/Interaction/GrabGrabbable.asset
+  uploadId: 727894

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 92948bb6260ae114e8c80c142093397e
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/Patch Notes.txt
+  uploadId: 727894

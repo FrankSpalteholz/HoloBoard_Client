@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: ad302e100f95fa54faf57028ebe72d86
+timeCreated: 1517411221
+licenseType: Store
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/Fonts/Montserrat/SIL Open Font License.txt
+  uploadId: 727894

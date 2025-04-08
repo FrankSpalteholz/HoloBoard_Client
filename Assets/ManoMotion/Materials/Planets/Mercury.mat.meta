@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d537264f664965441bcc55f488e179b5
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/Materials/Planets/Mercury.mat
+  uploadId: 727894

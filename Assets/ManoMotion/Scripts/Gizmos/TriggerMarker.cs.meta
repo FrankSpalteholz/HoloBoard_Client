@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 81b43fc4d4099f14792acef78793fd27
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/Scripts/Gizmos/TriggerMarker.cs
+  uploadId: 727894

@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 654fb55e6c0254f3ebcc5c9f6761bd43
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  preprocessorOverride: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/Materials/Shaders/Occlusion.shader
+  uploadId: 727894

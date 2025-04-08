@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 4a4936f18fc64164688ae0526111b7b3
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/XR/Loaders/ARKitLoader.asset
+  uploadId: 727894

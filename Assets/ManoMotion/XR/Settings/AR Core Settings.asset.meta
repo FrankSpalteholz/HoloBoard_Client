@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8c1adfa8ad3b14b358ec7acff9041b0b
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/XR/Settings/AR Core Settings.asset
+  uploadId: 727894

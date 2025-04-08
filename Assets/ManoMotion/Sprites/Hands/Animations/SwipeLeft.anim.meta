@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 62ce6988f38f90e41b1964aaad64edba
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/Sprites/Hands/Animations/SwipeLeft.anim
+  uploadId: 727894

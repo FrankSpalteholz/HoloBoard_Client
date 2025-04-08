@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 3ba1b96a0220d4c44853f58f5bb7cd49
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/Scripts/Core/Camera Managment/CameraChangeListener.cs
+  uploadId: 727894

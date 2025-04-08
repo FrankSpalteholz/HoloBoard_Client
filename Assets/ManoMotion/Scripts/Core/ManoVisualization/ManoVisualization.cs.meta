@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: bdeed4e0ff2134f0984ede47a0aa5b86
+timeCreated: 1528468354
+licenseType: Store
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/Scripts/Core/ManoVisualization/ManoVisualization.cs
+  uploadId: 727894

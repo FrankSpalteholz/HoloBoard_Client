@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 201ad4aefc3e44a46807bdb5dad1804b
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/Scenes/Video.unity
+  uploadId: 727894

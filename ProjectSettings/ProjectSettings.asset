@@ -185,7 +185,7 @@ PlayerSettings:
   stripEngineCode: 1
   iPhoneStrippingLevel: 0
   iPhoneScriptCallOptimization: 0
-  ForceInternetPermission: 0
+  ForceInternetPermission: 1
   ForceSDCardPermission: 0
   CreateWallpaper: 0
   androidSplitApplicationBinary: 0
@@ -558,7 +558,9 @@ PlayerSettings:
   enableInternalProfiler: 0
   logObjCUncaughtExceptions: 1
   enableCrashReportAPI: 0
-  cameraUsageDescription: Camera required for AR
+  cameraUsageDescription: This application requires camera permission in order to
+    detect a hand when you place it in front of the camera and understand the gesture
+    interaction.
   locationUsageDescription: Required for Geo Anchors
   microphoneUsageDescription: Mic required
   bluetoothUsageDescription: 
@@ -843,6 +845,7 @@ PlayerSettings:
     iPhone: 1
   scriptingBackend:
     Android: 1
+    iPhone: 1
   il2cppCompilerConfiguration: {}
   il2cppCodeGeneration: {}
   il2cppStacktraceInformation: {}

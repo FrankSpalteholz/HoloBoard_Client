@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 09b3f7394c8f34da19cd6616c1937ebc
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/Materials/LogoMat.mat
+  uploadId: 727894

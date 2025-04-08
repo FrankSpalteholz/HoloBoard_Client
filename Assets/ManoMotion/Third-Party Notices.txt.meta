@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: b78ce0949618c7043a5f459043683b10
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 280702
+  packageName: ManoMotion SDK
+  packageVersion: 2.1
+  assetPath: Assets/ManoMotion/Third-Party Notices.txt
+  uploadId: 727894
