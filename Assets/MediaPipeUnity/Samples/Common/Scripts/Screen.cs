@@ -26,6 +26,16 @@ namespace Mediapipe.Unity
       set => _screen.uvRect = value;
     }
 
+    // Methode hinzufügen zur Screen.cs
+    public void Initialize(int width, int height)
+    {
+        Resize(width, height);
+        // Standard-Rotation (keine Rotation)
+        Rotate(RotationAngle.Rotation0.Reverse());
+        // Standard-UV-Rect
+        uvRect = new UnityEngine.Rect(0, 0, 1, 1);
+    }
+
     public void Initialize(ImageSource imageSource)
     {
       _imageSource = imageSource;

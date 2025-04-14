@@ -1,9 +1,8 @@
 fileFormatVersion: 2
 guid: c478f08fb676943b897c4fb1c285f0f6
-folderAsset: yes
 PluginImporter:
   externalObjects: {}
-  serializedVersion: 2
+  serializedVersion: 3
   iconMap: {}
   executionOrder: {}
   defineConstraints: []
@@ -12,9 +11,11 @@ PluginImporter:
   isExplicitlyReferenced: 0
   validateReferences: 1
   platformData:
-  - first:
-      : Any
-    second:
+    Android:
+      enabled: 0
+      settings:
+        CPU: ARMv7
+    Any:
       enabled: 0
       settings:
         Exclude Android: 1
@@ -26,61 +27,36 @@ PluginImporter:
         Exclude Win64: 1
         Exclude iOS: 0
         Exclude tvOS: 1
-  - first:
-      Android: Android
-    second:
-      enabled: 0
-      settings:
-        CPU: ARMv7
-  - first:
-      Any: 
-    second:
-      enabled: 0
-      settings: {}
-  - first:
-      Editor: Editor
-    second:
+    Editor:
       enabled: 0
       settings:
         CPU: AnyCPU
         DefaultValueInitialized: true
         OS: AnyOS
-  - first:
-      Standalone: Linux64
-    second:
+    Linux64:
       enabled: 0
       settings:
         CPU: None
-  - first:
-      Standalone: OSXUniversal
-    second:
+    OSXUniversal:
       enabled: 0
       settings:
         CPU: None
-  - first:
-      Standalone: Win
-    second:
+    Win:
       enabled: 0
       settings:
         CPU: None
-  - first:
-      Standalone: Win64
-    second:
+    Win64:
       enabled: 0
       settings:
         CPU: None
-  - first:
-      iPhone: iOS
-    second:
+    iOS:
       enabled: 1
       settings:
         AddToEmbeddedBinaries: true
         CPU: AnyCPU
         CompileFlags: 
-        FrameworkDependencies: OpenGLES;
-  - first:
-      tvOS: tvOS
-    second:
+        FrameworkDependencies: ARKit;OpenGLES;
+    tvOS:
       enabled: 0
       settings:
         CPU: AnyCPU

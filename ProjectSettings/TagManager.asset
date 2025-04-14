@@ -7,6 +7,9 @@ TagManager:
   - TrackerManager
   - FPVRenderCam
   - ARRenderCam
+  - Global Resource
+  - MediaPipeDebugCanvas
+  - ARFacialBlendshapesText
   layers:
   - Default
   - TransparentFX

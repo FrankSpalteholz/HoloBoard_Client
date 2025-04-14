@@ -65,7 +65,11 @@ namespace Mediapipe.Unity
     public float focalLengthPx { get; } = 2.0f; // TODO: calculate at runtime
     public virtual bool isHorizontallyFlipped { get; set; } = false;
     public virtual bool isVerticallyFlipped { get; } = false;
+    
+    // TODO: make toggle
     public virtual bool isFrontFacing { get; } = false;
+    //public virtual bool isFrontFacing { get; } = false;
+    
     public virtual RotationAngle rotation { get; } = RotationAngle.Rotation0;
 
     public abstract string sourceName { get; }

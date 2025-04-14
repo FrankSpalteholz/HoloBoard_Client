@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "HoloBoard_Client.sln"
+    "dotnet.defaultSolution": "HoloBoard_MediaPipe.sln"
 }
