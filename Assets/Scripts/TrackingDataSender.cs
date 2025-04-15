@@ -1,81 +1,59 @@
 using UnityEngine;
+using System.Text;
 using NetworkFramework;
-using TMPro;
 
-public class TrackingDataSender : MonoBehaviour
+public class CompactTrackingDataSender : MonoBehaviour
 {
-    [Header("Komponentenreferenzen")]
-    [SerializeField] private GazeScreenIntersection gazeTracker;
-    [SerializeField] private AudioDetector audioDetector;
-    [SerializeField] private MonoBehaviour udpClientComponent; // Zieht das UDPClient-Skript
+    [Header("Settings")]
+    [SerializeField] private float sendRate = 0.05f; // 20 times per second
+    [SerializeField] private bool autoStart = true;
     
-    [Header("Debug-Anzeige")]
-    [SerializeField] private TextMeshProUGUI outputDebugText; // Anzeige der gesendeten Daten
-    [SerializeField] private bool showDebugInfo = true;
+    [Header("Component References")]
+    [SerializeField] private UDPClient udpClient;
     
-    [Header("Einstellungen")]
-    [SerializeField] private float sendRate = 0.05f; // Sendet 20 Mal pro Sekunde
-    [SerializeField] private bool autoStartSending = false;
-    
-    [Header("Z-Distanz Einstellungen")]
-    [SerializeField] private Transform headTrackingTransform;
-    [SerializeField] private Transform phoneScreenTransform;
-    [SerializeField] private Vector3 faceCamOffset = Vector3.zero;
-    
-    // Private Variablen
-    private UDPClient udpClient;
+    // Private fields
     private float lastSendTime = 0f;
     private bool isSending = false;
-    private string lastSentData = "";
+    private StringBuilder jsonBuilder = new StringBuilder(256); // Pre-allocate capacity
     
-    // Daten-Caching
-    private Vector2 lastGazePosition;
-    private float lastZDistance;
-    private bool lastAudioTriggered;
+    // References to data sources
+    private FaceTransformProvider faceProvider;
+    private ARFaceBlendshapeExtractor blendshapeExtractor;
+    private HandPositionInterpolator handInterpolator;
+    private HandLandmarkExtractor handLandmarkExtractor;
+    private AudioDetector audioDetector;
+    private GazeTrackerManager gazeTracker; // Hinzugefügt für Gazemarker-Daten
     
-    void Start()
+    private void Start()
     {
-        // UDPClient-Referenz holen
-        udpClient = udpClientComponent as UDPClient;
+        // Find references if not assigned
         if (udpClient == null)
-        {
-            Debug.LogError("UDPClient konnte nicht gefunden werden!");
-            enabled = false;
-            return;
-        }
+            udpClient = FindObjectOfType<UDPClient>();
         
-        // Prüfe, ob alle benötigten Komponenten vorhanden sind
-        if (gazeTracker == null)
-        {
-            Debug.LogError("GazeTracker nicht zugewiesen!");
-            enabled = false;
-            return;
-        }
+        // Find all data sources
+        FindDataSources();
         
-        // Debug-Text initialisieren
-        if (outputDebugText != null && showDebugInfo)
-        {
-            outputDebugText.text = "Warte auf Tracking-Daten...";
-        }
-        
-        // Automatisch mit dem Senden beginnen, falls eingestellt
-        if (autoStartSending)
-        {
+        // Auto-start if configured
+        if (autoStart)
             StartSending();
-        }
     }
     
-    void Update()
+    private void FindDataSources()
     {
-        if (!isSending) return;
-        
-        // Aktualisiere die Debug-Anzeige auch zwischen den Sendungen
-        if (outputDebugText != null && showDebugInfo)
-        {
-            UpdateDebugDisplay();
-        }
-        
-        // Prüfe, ob es Zeit ist, neue Daten zu senden
+        faceProvider = FindObjectOfType<FaceTransformProvider>();
+        blendshapeExtractor = FindObjectOfType<ARFaceBlendshapeExtractor>();
+        handInterpolator = FindObjectOfType<HandPositionInterpolator>();
+        handLandmarkExtractor = HandLandmarkExtractor.Instance;
+        audioDetector = FindObjectOfType<AudioDetector>();
+        gazeTracker = GazeTrackerManager.Instance; // Referenz zum GazeTrackerManager
+    }
+    
+    private void Update()
+    {
+        if (!isSending || udpClient == null)
+            return;
+            
+        // Send at specified rate
         if (Time.time - lastSendTime > sendRate)
         {
             SendTrackingData();
@@ -85,84 +63,128 @@ public class TrackingDataSender : MonoBehaviour
     
     private void SendTrackingData()
     {
-        // Prüfe, ob die Netzwerkverbindung aktiv ist
-        if (udpClient == null) return;
+        // Reset string builder
+        jsonBuilder.Clear();
+        jsonBuilder.Append("{");
         
-        // Hole die Gaze-Positionsdaten
-        lastGazePosition = gazeTracker.GetHeadPositionProjection();
+        // Add timestamp
+        jsonBuilder.Append("\"t\":").Append(Time.time.ToString("F3"));
         
-        // Berechne die Z-Distanz zwischen Kopf und Bildschirm
-        lastZDistance = gazeTracker.GetZDistance();
+        // Add head transform if available
+        if (faceProvider != null && faceProvider.IsFaceTracked())
+        {
+            Vector3 headPos = faceProvider.GetFacePosition();
+            Quaternion headRot = faceProvider.GetFaceRotation();
+            
+            jsonBuilder.Append(",\"h\":{");
+            jsonBuilder.Append("\"p\":[").Append(headPos.x.ToString("F3")).Append(",")
+                       .Append(headPos.y.ToString("F3")).Append(",")
+                       .Append(headPos.z.ToString("F3")).Append("],");
+            
+            jsonBuilder.Append("\"r\":[").Append(headRot.x.ToString("F3")).Append(",")
+                       .Append(headRot.y.ToString("F3")).Append(",")
+                       .Append(headRot.z.ToString("F3")).Append(",")
+                       .Append(headRot.w.ToString("F3")).Append("]");
+            jsonBuilder.Append("}");
+            
+            // Add facial blendshapes if available
+            if (blendshapeExtractor != null)
+            {
+                FacialBlendshapes bs = blendshapeExtractor.GetFacialBlendshapes();
+                
+                jsonBuilder.Append(",\"bs\":{");
+                jsonBuilder.Append("\"jo\":").Append(bs.JawOpen.ToString("F2")).Append(",");
+                jsonBuilder.Append("\"sl\":").Append(bs.MouthSmileLeft.ToString("F2")).Append(",");
+                jsonBuilder.Append("\"sr\":").Append(bs.MouthSmileRight.ToString("F2")).Append(",");
+                jsonBuilder.Append("\"bl\":").Append(bs.EyeBlinkLeft.ToString("F2")).Append(",");
+                jsonBuilder.Append("\"br\":").Append(bs.EyeBlinkRight.ToString("F2"));
+                
+                // Add other blendshapes if needed
+                // jsonBuilder.Append(",\"to\":").Append(bs.TongueOut.ToString("F2"));
+                
+                jsonBuilder.Append("}");
+            }
+        }
         
-        // Hole den Audio-Trigger-Status
-        lastAudioTriggered = (audioDetector != null) && audioDetector.IsAudioTriggered();
+        // Add hand tracking data if available
+        if (handInterpolator != null && handInterpolator.IsHandVisible())
+        {
+            Vector3 handPos = handInterpolator.GetCurrentPosition();
+            bool isPointing = handInterpolator.IsPointing();
+            
+            // Get handedness and gestures if available
+            string handedness = "unknown";
+            bool isPinching = false;
+            bool isHandOpen = false;
+            bool isNeutral = false;
+            
+            if (handLandmarkExtractor != null && handLandmarkExtractor.IsHandDetected)
+            {
+                handedness = handLandmarkExtractor.CurrentHandedness;
+                isPinching = handLandmarkExtractor.IsPinching;
+                isHandOpen = handLandmarkExtractor.IsHandOpen;
+                isNeutral = handLandmarkExtractor.IsNeutral;
+            }
+            
+            jsonBuilder.Append(",\"hand\":{");
+            jsonBuilder.Append("\"p\":[").Append(handPos.x.ToString("F3")).Append(",")
+                    .Append(handPos.y.ToString("F3")).Append(",")
+                    .Append(handPos.z.ToString("F3")).Append("],");
+            
+            jsonBuilder.Append("\"side\":\"").Append(handedness).Append("\",");
+            jsonBuilder.Append("\"point\":").Append(isPointing ? "true" : "false").Append(",");
+            jsonBuilder.Append("\"pinch\":").Append(isPinching ? "true" : "false").Append(",");
+            jsonBuilder.Append("\"open\":").Append(isHandOpen ? "true" : "false").Append(",");
+            jsonBuilder.Append("\"neutral\":").Append(isNeutral ? "true" : "false");
+            jsonBuilder.Append("}");
+        }
+
+        // Add audio trigger data if available
+        if (audioDetector != null)
+        {
+            bool triggered = audioDetector.IsAudioTriggered();
+            
+            jsonBuilder.Append(",\"audio\":{");
+            jsonBuilder.Append("\"trig\":").Append(triggered ? "true" : "false");
+            jsonBuilder.Append("}");
+        }
+
+        // Add gaze marker data if available
+        if (gazeTracker != null && gazeTracker.HasValidProjection())
+        {
+            Vector2 gazePos = gazeTracker.GetHeadPositionProjection();
+            
+            jsonBuilder.Append(",\"gaze\":{");
+            jsonBuilder.Append("\"x\":").Append(gazePos.x.ToString("F3")).Append(",");
+            jsonBuilder.Append("\"y\":").Append(gazePos.y.ToString("F3"));
+            jsonBuilder.Append("}");
+        }
         
-        // Formatiere die Daten
-        lastSentData = string.Format("DATA:{0:F4},{1:F4},{2:F2},{3}",
-            lastGazePosition.x, lastGazePosition.y, lastZDistance, lastAudioTriggered ? 1 : 0);
+        // Close JSON object
+        jsonBuilder.Append("}");
         
-        // Sende die Daten
-        udpClient.SendNetworkMessage(lastSentData);
-        
-        // Debug-Ausgabe
-        Debug.Log("Tracking-Daten gesendet: " + lastSentData);
-        
-        // Debug-Anzeige aktualisieren
-        UpdateDebugDisplay();
+        // Send the data
+        udpClient.SendNetworkMessage(jsonBuilder.ToString());
     }
     
-    private void UpdateDebugDisplay()
-    {
-        if (outputDebugText == null || !showDebugInfo) return;
-        
-        string audioStatus = lastAudioTriggered ? "<color=red>AKTIV</color>" : "inaktiv";
-        string connectionStatus = udpClient.connectionStatus;
-        string sendRateInfo = (sendRate * 1000).ToString("F0") + " ms";
-        
-        outputDebugText.text = string.Format(
-            "<b>TRACKING DATEN</b>\n\n" +
-            "Position X: <b>{0:F2}</b>\n" +
-            "Position Y: <b>{1:F2}</b>\n" +
-            "Distanz Z: <b>{2:F1} cm</b>\n" +
-            "Audio-Trigger: <b>{3}</b>\n\n" +
-            "<size=80%>Senderate: {4}\n" +
-            "Netzwerk: {5}\n" +
-            "Datenpaket: {6}</size>",
-            lastGazePosition.x, lastGazePosition.y, lastZDistance, 
-            audioStatus, sendRateInfo, connectionStatus, lastSentData
-        );
-    }
-    
-    // Öffentliche Methoden zum Steuern des Sendens
-    
+    // Public methods
     public void StartSending()
     {
         isSending = true;
-        lastSendTime = Time.time;
-        Debug.Log("Tracking-Datenübertragung gestartet");
-        
-        if (outputDebugText != null && showDebugInfo)
-        {
-            outputDebugText.text = "Tracking-Datenübertragung gestartet...";
-        }
     }
     
     public void StopSending()
     {
         isSending = false;
-        Debug.Log("Tracking-Datenübertragung gestoppt");
-        
-        if (outputDebugText != null && showDebugInfo)
-        {
-            outputDebugText.text = "Tracking-Datenübertragung gestoppt.";
-        }
     }
     
     public void ToggleSending()
     {
-        if (isSending)
-            StopSending();
-        else
-            StartSending();
+        isSending = !isSending;
+    }
+    
+    public void SetSendRate(float rate)
+    {
+        sendRate = Mathf.Max(0.01f, rate);
     }
 }

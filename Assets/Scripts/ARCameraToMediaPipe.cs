@@ -89,7 +89,7 @@ public class ARCameraToMediaPipe : MonoBehaviour
             Shader processingShader = Shader.Find(ProcessingShaderName);
             if (processingShader == null)
             {
-                Debug.LogError($"Shader '{ProcessingShaderName}' nicht gefunden! Erstelle einfaches Material.");
+                //Debug.LogError($"Shader '{ProcessingShaderName}' nicht gefunden! Erstelle einfaches Material.");
                 _processingMaterial = new Material(Shader.Find("Unlit/Texture"));
             }
             else

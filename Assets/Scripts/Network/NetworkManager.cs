@@ -14,15 +14,21 @@ namespace NetworkFramework
         protected bool isRunning = false;
         
         public string lastReceivedMessage = "";
-        public string connectionStatus = "Nicht verbunden";
+        public string connectionStatus = "Not connected";
         
-        // Ereignisse für Nachrichtenempfang und Verbindungsstatus
+        // Events for message reception and connection status
         public event Action<string> OnMessageReceived;
         public event Action<string> OnStatusChanged;
         
+        protected virtual void Awake()
+        {
+            // Base implementation for initialization common to all network managers
+            DontDestroyOnLoad(this.gameObject);
+        }
+        
         protected virtual void Start()
         {
-            DontDestroyOnLoad(this.gameObject);
+            // Base implementation can be extended by derived classes
         }
         
         protected virtual void OnDestroy()
@@ -35,23 +41,23 @@ namespace NetworkFramework
             StopConnection();
         }
         
-        // Aktualisiert den Verbindungsstatus und löst das entsprechende Ereignis aus
+        // Updates the connection status and triggers the corresponding event
         protected void UpdateStatus(string status)
         {
             connectionStatus = status;
             OnStatusChanged?.Invoke(status);
-            Debug.Log("Netzwerkstatus: " + status);
+            Debug.Log("Network status: " + status);
         }
         
-        // Verarbeitet eine empfangene Nachricht und löst das entsprechende Ereignis aus
+        // Processes a received message and triggers the corresponding event
         protected void ProcessReceivedMessage(string message)
         {
             lastReceivedMessage = message;
             OnMessageReceived?.Invoke(message);
-            Debug.Log("Nachricht empfangen: " + message);
+            Debug.Log("Message received: " + message);
         }
         
-        // Thread-sichere Nachrichtenbehandlung im Unity-Hauptthread
+        // Thread-safe message handling in the Unity main thread
         protected void HandleIncomingDataOnMainThread(string data)
         {
             if (string.IsNullOrEmpty(data)) return;
@@ -61,7 +67,7 @@ namespace NetworkFramework
             });
         }
         
-        // Verbindung stoppen und Ressourcen freigeben
+        // Stop connection and release resources
         public virtual void StopConnection()
         {
             isRunning = false;
@@ -74,7 +80,7 @@ namespace NetworkFramework
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError("Fehler beim Beenden des Threads: " + e.ToString());
+                    Debug.LogError("Error stopping thread: " + e.ToString());
                 }
                 receiveThread = null;
             }
@@ -87,12 +93,12 @@ namespace NetworkFramework
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError("Fehler beim Schließen des UdpClient: " + e.ToString());
+                    Debug.LogError("Error closing UdpClient: " + e.ToString());
                 }
                 udpClient = null;
             }
             
-            UpdateStatus("Verbindung getrennt");
+            UpdateStatus("Connection terminated");
         }
     }
 }

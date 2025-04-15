@@ -5,11 +5,15 @@ using System.Text;
 using System.Threading;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace NetworkFramework
 {
     public class UDPClient : NetworkManager
     {
+        // Singleton pattern implementation
+        public static UDPClient Instance { get; private set; }
+
         [Header("Server Settings")]
         [SerializeField] public string serverIP = "192.168.1.100"; // Mac computer IP address
         [SerializeField] private int serverPort = 8080;
@@ -22,14 +26,61 @@ namespace NetworkFramework
         
         [Header("Connection Retry Settings")]
         [SerializeField] private bool enableReconnectAttempts = true;
-        [SerializeField] private float reconnectInterval = 5f; // Sekunden zwischen Verbindungsversuchen
-        [SerializeField] private bool logConnectionErrors = false; // Nur für Debug-Zwecke
+        [SerializeField] private float reconnectInterval = 5f; // Seconds between connection attempts
+        [SerializeField] private bool logConnectionErrors = false; // Only for debug purposes
+        
+        [Header("Debug Settings")]
+        [SerializeField] private int maxLoggedMessages = 10; // Maximum number of messages to keep in log
         
         private IPEndPoint serverEndPoint;
         private float startTime;
         private bool autoConnectTriggered = false;
         private float lastReconnectTime = 0f;
         private bool isAttemptingConnection = false;
+        
+        // Message log for debugging
+        private Queue<LogEntry> messageLog = new Queue<LogEntry>();
+        
+        // Structure to track message information
+        private struct LogEntry
+        {
+            public string message;
+            public MessageDirection direction;
+            public DateTime timestamp;
+            
+            public LogEntry(string msg, MessageDirection dir)
+            {
+                message = msg;
+                direction = dir;
+                timestamp = DateTime.Now;
+            }
+            
+            public override string ToString()
+            {
+                string prefix = direction == MessageDirection.Incoming ? "← IN" : "→ OUT";
+                string time = timestamp.ToString("HH:mm:ss");
+                return $"[{time}] {prefix}: {message}";
+            }
+        }
+        
+        private enum MessageDirection
+        {
+            Incoming,
+            Outgoing
+        }
+
+        protected override void Awake()
+        {
+            base.Awake();
+            
+            // Singleton implementation
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+        }
         
         protected override void Start()
         {
@@ -53,14 +104,14 @@ namespace NetworkFramework
         
         private void Update()
         {
-            // Auto-connect nach kurzer Verzögerung
+            // Auto-connect after short delay
             if (autoConnectOnStart && !isRunning && !autoConnectTriggered && Time.time > startTime + autoConnectDelay)
             {
                 autoConnectTriggered = true;
                 ConnectToServer();
             }
             
-            // Verbindungswiederherstellung
+            // Connection restoration
             if (enableReconnectAttempts && !isRunning && !isAttemptingConnection && Time.time > lastReconnectTime + reconnectInterval)
             {
                 if (!string.IsNullOrEmpty(serverIP))
@@ -68,7 +119,7 @@ namespace NetworkFramework
                     lastReconnectTime = Time.time;
                     isAttemptingConnection = true;
                     
-                    // Im Hintergrund verbinden, um UI-Blockierung zu vermeiden
+                    // Connect in background to avoid UI blocking
                     StartCoroutine(TryReconnect());
                 }
             }
@@ -78,44 +129,44 @@ namespace NetworkFramework
         {
             if (logConnectionErrors)
             {
-                Debug.Log("Versuche, Verbindung zum Server herzustellen: " + serverIP);
+                Debug.Log("Attempting to connect to server: " + serverIP);
             }
             
             try
             {
-                // Starten UDP-Client
+                // Start UDP client
                 udpClient = new UdpClient(localPort);
                 serverEndPoint = new IPEndPoint(IPAddress.Parse(serverIP), serverPort);
                 
                 isRunning = true;
                 
-                // Starte Thread für Datenempfang
+                // Start thread for data reception
                 receiveThread = new Thread(new ThreadStart(ReceiveData));
                 receiveThread.IsBackground = true;
                 receiveThread.Start();
                 
-                // Sende Ping (optional)
+                // Send ping (optional)
                 byte[] data = Encoding.UTF8.GetBytes("ping");
                 udpClient.Send(data, data.Length, serverEndPoint);
                 
-                // Status aktualisieren
+                // Update status
                 MainThreadDispatcher.RunOnMainThread(() => {
-                    UpdateStatus("Verbindung zum Server wird hergestellt...");
+                    UpdateStatus("Connecting to server...");
                 });
             }
             catch (Exception e)
             {
-                // Fehlerbehandlung ohne Debug.LogError
+                // Error handling without Debug.LogError
                 isRunning = false;
-                StopConnectionWithLogging(false); // false bedeutet: keine Fehlermeldungen ausgeben
+                StopConnectionWithLogging(false); // false means: don't output error messages
                 
                 MainThreadDispatcher.RunOnMainThread(() => {
-                    UpdateStatus("Warte auf Server...");
+                    UpdateStatus("Waiting for server...");
                 });
                 
                 if (logConnectionErrors)
                 {
-                    Debug.LogWarning("Server nicht erreichbar: " + e.Message);
+                    Debug.LogWarning("Server not reachable: " + e.Message);
                 }
             }
             
@@ -177,6 +228,9 @@ namespace NetworkFramework
                         });
                     }
                     
+                    // Add to message log
+                    AddToMessageLog(message, MessageDirection.Incoming);
+                    
                     // Process message in main thread
                     HandleIncomingDataOnMainThread(message);
                 }
@@ -184,18 +238,18 @@ namespace NetworkFramework
                 {
                     if (isRunning) // Only report errors if not intentionally stopped
                     {
-                        // Fehler im Hauptthread behandeln, ohne Flut von Meldungen
+                        // Handle error in main thread, without flood of messages
                         MainThreadDispatcher.RunOnMainThread(() => {
-                            // Status aktualisieren ohne Fehlerausgabe
-                            UpdateStatus("Verbindung unterbrochen");
+                            // Update status without error output
+                            UpdateStatus("Connection interrupted");
                             
                             if (logConnectionErrors)
                             {
-                                Debug.LogWarning("Fehler beim Empfang: " + e.Message);
+                                Debug.LogWarning("Receive error: " + e.Message);
                             }
                         });
                         
-                        // Verbindung stoppen, aber nicht ständig neu starten
+                        // Stop connection, but don't constantly restart
                         isRunning = false;
                         break;
                     }
@@ -216,7 +270,14 @@ namespace NetworkFramework
             {
                 byte[] data = Encoding.UTF8.GetBytes(message);
                 udpClient.Send(data, data.Length, serverEndPoint);
-                Debug.Log("Message sent: " + message);
+                
+                // Add to message log
+                AddToMessageLog(message, MessageDirection.Outgoing);
+                
+                if (logConnectionErrors)
+                {
+                    Debug.Log("Message sent: " + message);
+                }
             }
             catch (Exception e)
             {
@@ -226,6 +287,43 @@ namespace NetworkFramework
                 }
                 UpdateStatus("Send error");
             }
+        }
+        
+        // Add message to log queue with thread safety
+        private void AddToMessageLog(string message, MessageDirection direction)
+        {
+            // Ensure this happens on the main thread
+            MainThreadDispatcher.RunOnMainThread(() => {
+                // Add new message
+                messageLog.Enqueue(new LogEntry(message, direction));
+                
+                // Maintain maximum size
+                while (messageLog.Count > maxLoggedMessages)
+                {
+                    messageLog.Dequeue();
+                }
+            });
+        }
+        
+        // Public method to get message log as a formatted string
+        public string GetMessageLogAsString()
+        {
+            if (messageLog.Count == 0)
+                return "No messages logged";
+                
+            StringBuilder sb = new StringBuilder();
+            foreach (LogEntry entry in messageLog)
+            {
+                sb.AppendLine(entry.ToString());
+            }
+            
+            return sb.ToString();
+        }
+        
+        // Clear the message log
+        public void ClearMessageLog()
+        {
+            messageLog.Clear();
         }
         
         public void UpdateServerSettings(string ip, int port)
@@ -261,14 +359,14 @@ namespace NetworkFramework
             return autoConnectOnStart;
         }
         
-        // Behalte die ursprüngliche Signatur für die Override-Methode bei
+        // Keep the original signature for the override method
         public override void StopConnection()
         {
-            // Rufe einfach deine neue Methode mit dem Standardwert auf
+            // Simply call your new method with the default value
             StopConnectionWithLogging(true);
         }
 
-        // Erstelle eine neue Methode für die erweiterte Funktionalität
+        // Create a new method for the extended functionality
         public void StopConnectionWithLogging(bool logErrors = true)
         {
             try
@@ -305,7 +403,7 @@ namespace NetworkFramework
                 {
                     if (logErrors)
                     {
-                        Debug.LogError("Fehler beim Beenden des Threads: " + e.ToString());
+                        Debug.LogError("Error terminating thread: " + e.ToString());
                     }
                 }
                 receiveThread = null;
@@ -321,13 +419,13 @@ namespace NetworkFramework
                 {
                     if (logErrors)
                     {
-                        Debug.LogError("Fehler beim Schließen des UdpClient: " + e.ToString());
+                        Debug.LogError("Error closing UdpClient: " + e.ToString());
                     }
                 }
                 udpClient = null;
             }
             
-            UpdateStatus("Verbindung getrennt");
+            UpdateStatus("Connection terminated");
         }
     }
 }

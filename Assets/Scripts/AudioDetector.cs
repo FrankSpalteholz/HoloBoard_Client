@@ -2,9 +2,13 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class AudioDetector : MonoBehaviour
 {
+    // Singleton implementation
+    public static AudioDetector Instance { get; private set; }
+
     [Header("Audio Settings")]
     [SerializeField] private bool detectAudio = true;
     [SerializeField] private float detectionThreshold = 0.1f; // Threshold for detection
@@ -40,6 +44,22 @@ public class AudioDetector : MonoBehaviour
     private Vector2 originalMarkerSize;
     private Vector2 currentMarkerSize;
     private Vector2 targetMarkerSize;
+
+    // Events
+    public event Action OnAudioTriggered;
+    public event Action OnAudioTriggerEnded;
+
+    void Awake()
+    {
+        // Singleton Pattern implementation
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+        
+        Instance = this;
+    }
 
     void Start()
     {
@@ -159,6 +179,8 @@ public class AudioDetector : MonoBehaviour
         
         if (currentVolume > detectionThreshold && timeSinceLastTrigger > triggerCooldown)
         {
+            bool wasPreviouslyTriggered = audioTriggered;
+
             // Activate trigger
             audioTriggered = true;
             lastTriggerTime = Time.time;
@@ -168,13 +190,26 @@ public class AudioDetector : MonoBehaviour
             
             // Debug output
             Debug.Log("Audio Trigger activated! Volume: " + currentVolume);
+
+            // Fire event if this is a new trigger
+            if (!wasPreviouslyTriggered)
+            {
+                OnAudioTriggered?.Invoke();
+            }
         }
     }
     
     private IEnumerator ResetTriggerAfterDuration()
     {
         yield return new WaitForSeconds(triggerDuration);
+        bool wasPreviouslyTriggered = audioTriggered;
         audioTriggered = false;
+
+        // Fire event only if state changed
+        if (wasPreviouslyTriggered)
+        {
+            OnAudioTriggerEnded?.Invoke();
+        }
     }
     
     private void UpdateGazeMarkerVisuals()
@@ -215,6 +250,12 @@ public class AudioDetector : MonoBehaviour
     {
         return currentVolume;
     }
+
+    // Public method to set the detection threshold programmatically
+    public void SetDetectionThreshold(float threshold)
+    {
+        detectionThreshold = Mathf.Max(0.01f, threshold);
+    }
     
     // Ensure microphone is stopped when script is disabled
     private void OnDisable()
@@ -236,28 +277,19 @@ public class AudioDetector : MonoBehaviour
         }
     }
 
-    // OnGUI for threshold adjustment
-    void OnGUI()
-    {
-        if (!showDebugInfo) return;
-        
-        GUILayout.BeginArea(new Rect(10, Screen.height - 360, 300, 100));
-        
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("Threshold: " + detectionThreshold.ToString("F2"));
-        if (GUILayout.Button("-0.05")) detectionThreshold = Mathf.Max(0.01f, detectionThreshold - 0.05f);
-        if (GUILayout.Button("+0.05")) detectionThreshold += 0.05f;
-        GUILayout.EndHorizontal();
-        
-        GUILayout.EndArea();
-    }
-    
     // Method to manually trigger audio for testing
     public void TestTrigger()
     {
+        bool wasPreviouslyTriggered = audioTriggered;
         audioTriggered = true;
         lastTriggerTime = Time.time;
         StartCoroutine(ResetTriggerAfterDuration());
         Debug.Log("Test Audio Trigger activated manually");
+
+        // Fire event only if state changed
+        if (!wasPreviouslyTriggered)
+        {
+            OnAudioTriggered?.Invoke();
+        }
     }
 }
